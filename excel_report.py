@@ -244,26 +244,24 @@ class Excel_report():
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(path, engine='xlsxwriter') as writer:
             self.dataframe.to_excel(writer, sheet_name=sheet_name, index=False)
-            workbook  = writer.Workbook('Raport_bilingowy.xlsx')
-            worksheet = workbook.sheets[sheet_name]
 #            iteracja po grupach
-            row = 0
-            for name, group in self.df_groups:
-                no_rows = group[group.columns[0]].count()
-#                poziom nazwy grupy
-#                oparte o iloc[0+xrow,0+xcol]
-                worksheet.set_row(row, None, None, {'level': 1})
-                for xcol in range(len(self.no_columns-3)):
-                    worksheet.write(row, group.iloc[row,xcol])
-                worksheet.write(row, group.iloc[row,self.no_columns])
-#                for value in group.iterrows():
-#                    for col_name in group.columns:
-#                        worksheet.write(row, col_name, value)
-##                poziom grupy
-#                worksheet.set_row(row+1, None, None, {'level': 2})
-#                worksheet.write()
-                row = row+no_rows+1
-            writer.save()
+#        row = 0
+#        for name, group in self.df_groups:
+#            no_rows = group[group.columns[0]].count()
+##                poziom nazwy grupy
+##                oparte o iloc[0+xrow,0+xcol]
+#            worksheet.set_row(row, None, None, {'level': 1})
+#            for xcol in range(len(self.no_columns-3)):
+#                worksheet.write(row, group.iloc[row,xcol])
+#            worksheet.write(row, group.iloc[row,self.no_columns])
+##                for value in group.iterrows():
+##                    for col_name in group.columns:
+##                        worksheet.write(row, col_name, value)
+###                poziom grupy
+##                worksheet.set_row(row+1, None, None, {'level': 2})
+##                worksheet.write()
+#            row = row+no_rows+1
+#        writer.save()
 #        writer.close()
         # Get the xlsxwriter objects from the dataframe writer object.
 #        workbook  = writer.book
