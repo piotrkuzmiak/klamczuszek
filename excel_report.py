@@ -214,13 +214,14 @@ class Excel_report():
         
     def __init__(self, dataframe, groupby):
         """
-        Konstruktor do utworzenia obiektu dla utworzenia raportu.
+        Konstruktor do utworzenia obiektu dla wyeksportowania raportu.
         
         Parameters
         ----------
         dataframe: Dataframe
             zrodlo dla raportu w postaci Dataframe
-        
+        groupby: str
+            kolumna po ktorej przeprowadzic grupowanie na pandas.Dataframe()
             
         Returns
         -------
@@ -236,48 +237,40 @@ class Excel_report():
         
         
     def unload(self, path, sheet_name):
+        """
+        Funkcja do weksportowania pandas.Dataframe() do Excel'a.
+        Wyesportowany arkusz zawiera grupowanie.
+        
+        Parameters
+        ----------
+        path: str
+            sciezka do pliku wynikowego z nazwa samego pliku Excel w sciezce.
+        groupby: str
+            kolumna po ktorej przeprowadzic grupowanie na pandas.Dataframe()
+            
+        Returns
+        -------
+        Excel file:Excel object
+                   
+        Notes:
+        -----
+        Plik w formacie xlsx
+        """
         import pandas as pd
-
-        # Create a Pandas dataframe from the data.
-#        df = pd.DataFrame({'Data': [10, 20, 30, 20, 15, 30, 45]})
         
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(path, engine='xlsxwriter') as writer:
-           
-            
-#            iteracja po grupach
             row = 0
+            #            iteracja po grupach
+            #TODO: dodac kolorowanie komorek oraz kolejne poziomy
             for name, group in self.df_groups:
                 no_rows = group[group.columns[0]].count()
-                
                 group.to_excel(writer, sheet_name=sheet_name, index=False, startrow=row+1, header=False)
                 workbook  = writer.book
                 worksheet = writer.sheets[sheet_name]
-                worksheet.set_row(row,None,None,{'level':1})
-                for xrow in range(row+1, no_rows):
-                    worksheet.set_row(xrow,None,None,{'level':2})
+                worksheet.set_row(row,None,None, {'level':0})
                 worksheet.write(row,0,'kolumna1')
-                
-                
-                
-                
-                
-#    #                poziom nazwy grupy
-#    ##                oparte o iloc[0+xrow,0+xcol]
-#                worksheet.set_row(row, None, None, {'level': 1})
-#                for xcol in range(self.no_columns-3):
-#                    worksheet.write(row, xcol, 'wartosc')
-#                worksheet.write(row, group.iloc[row,xcol])
-                    
-##                for value in group.iterrows():
-##                    for col_name in group.columns:
-##                        worksheet.write(row, col_name, value)
-###                poziom grupy
-##                worksheet.set_row(row+1, None, None, {'level': 2})
-##                worksheet.write()
+                for xrow in range(row+1, no_rows+1):
+                    worksheet.set_row(xrow,None,None,{'level':1})
                 row = row+no_rows+1
-        # Get the xlsxwriter objects from the dataframe writer object.
-#        workbook  = writer.book
-#        worksheet = writer.sheets['Sheet1']
-#        writer.save()
     
