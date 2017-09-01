@@ -257,12 +257,12 @@ class Excel_report():
         Plik w formacie xlsx
         """
         import pandas as pd
-        
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(path, engine='xlsxwriter') as writer:
             row = 0
             #            iteracja po grupach
             #TODO: dodac kolorowanie komorek oraz kolejne poziomy
+            
             for name, group in self.df_groups:
                 no_rows = group[group.columns[0]].count()
                 group.to_excel(writer, sheet_name=sheet_name, index=False, startrow=row+1, header=False)
@@ -270,7 +270,7 @@ class Excel_report():
                 worksheet = writer.sheets[sheet_name]
                 worksheet.set_row(row,None,None, {'level':0})
                 worksheet.write(row,0,'kolumna1')
-                for xrow in range(row+1, no_rows+1):
+                for xrow in range(row+1, row+1+no_rows+1):
                     worksheet.set_row(xrow,None,None,{'level':1})
+                
                 row = row+no_rows+1
-    
