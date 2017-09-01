@@ -274,3 +274,5 @@ class Excel_report():
                     worksheet.set_row(xrow,None,None,{'level':1})
                 
                 row = row+no_rows+1
+            worksheet.set_column('A:B', 10)
+            worksheet.set_column('C:D', 50)
