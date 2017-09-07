@@ -212,7 +212,7 @@ class Excel_report():
     Klasa dla przygotowania raportu w Excel w oparciu o Dataframe
     """
         
-    def __init__(self, dataframe, groupby):
+    def __init__(self, dataframe):
         """
         Konstruktor do utworzenia obiektu dla wyeksportowania raportu z podliczeniem.
         
@@ -231,12 +231,11 @@ class Excel_report():
         -----
         """
         self.dataframe = dataframe
-        self.df_groups = dataframe.groupby(by=groupby)
         self.no_columns = len(dataframe.columns)
         
         
         
-    def unload(self, path, sheet_name):
+    def unload(self, path, sheet_name, groupby):
         """
         Funkcja do weksportowania pandas.Dataframe() do Excel'a.
         Wyesportowany arkusz zawiera grupowanie.
@@ -263,10 +262,16 @@ class Excel_report():
             row = 0
             #            iteracja po grupach
             #TODO: dodac kolorowanie komorek oraz kolejne poziomy
-            for name, group in self.df_groups:
+            df_groups = self.dataframe.groupby(by=groupby)
+            for name, group in df_groups:
 #                group.drop_duplicates(,inplace=True)
 #                no_rows = group[group.columns[0]].count()
-                df = group.groupby(['SKP','NAZWA_KAMPANII']).sum()
+                
+#                for n, g in df[['obreb','funkcja_dominujaca','mobile','wired']].groupby(by=['obreb','funkcja_dominujaca']):
+#                    print(n)
+#                    print(g.sum())
+                
+                df = group.sum()
                 df.to_excel(writer, sheet_name=sheet_name, index=False, startrow=row+1, header=True)
                 
                 workbook  = writer.book
