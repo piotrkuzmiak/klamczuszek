@@ -258,30 +258,31 @@ class Excel_report():
         import pandas as pd
         
         # Create a Pandas Excel writer using XlsxWriter as the engine.
-        with pd.ExcelWriter(path, engine='xlsxwriter') as writer:
-            row = 0
+        with xlsxwriter.Workbook(path) as wb:
+            worksheet = wb.add_worksheet(sheet_name)
+            row = 1
             #            iteracja po grupach
             #TODO: dodac kolorowanie komorek oraz kolejne poziomy
             df_groups = self.dataframe.groupby(by=groupby)
             for name, group in df_groups:
 #                group.drop_duplicates(,inplace=True)
-#                no_rows = group[group.columns[0]].count()
+                no_rows = group[group.columns[0]].count()
                 
 #                for n, g in df[['obreb','funkcja_dominujaca','mobile','wired']].groupby(by=['obreb','funkcja_dominujaca']):
 #                    print(n)
 #                    print(g.sum())
                 
-                df = group.sum()
-                df.to_excel(writer, sheet_name=sheet_name, index=False, startrow=row+1, header=True)
-                
-                workbook  = writer.book
-                worksheet = writer.sheets[sheet_name]
-                worksheet.set_row(row,None,None, {'level':0})
-                
+                s = group.sum()
+#                df.to_excel(writer, sheet_name=sheet_name, index=False, startrow=row+1, header=True)
+                for r in range(no_rows):
+                    for i in range(s.size):
+                        worksheet.write(row+r,i,s.iat[i])
+#                worksheet.set_row(row,None,None, {'level':0})
+                        
 #                worksheet.write(row,0,'kolumna1')
 #                for xrow in range(row+1, row+1+no_rows+1):
 #                    worksheet.set_row(xrow,None,None,{'level':1})
-#                row = row+no_rows+1
-                row = row +1
-                worksheet.set_column('A:C', 10)
+                row = row+1
+#                row = row +1
+#                worksheet.set_column('A:C', 10)
 #            worksheet.set_column('A:C", 10)
