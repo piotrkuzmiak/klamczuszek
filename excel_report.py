@@ -207,6 +207,7 @@ workbook.close()
 
 #%%
 class Excel_report():
+    
     import xlsxwriter
     """
     Klasa dla przygotowania raportu w Excel w oparciu o Dataframe
@@ -255,34 +256,37 @@ class Excel_report():
         -----
         Plik w formacie xlsx
         """
-        import pandas as pd
-        
+#        import pandas as pd
+        import pdb
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with xlsxwriter.Workbook(path) as wb:
             worksheet = wb.add_worksheet(sheet_name)
+            worksheet.write(0,0,'wiersz pierwszy kolumna 1')
             row = 1
             #            iteracja po grupach
             #TODO: dodac kolorowanie komorek oraz kolejne poziomy
             df_groups = self.dataframe.groupby(by=groupby)
             for name, group in df_groups:
+                col=0
 #                group.drop_duplicates(,inplace=True)
-                no_rows = group[group.columns[0]].count()
-                
-#                for n, g in df[['obreb','funkcja_dominujaca','mobile','wired']].groupby(by=['obreb','funkcja_dominujaca']):
-#                    print(n)
-#                    print(g.sum())
-                
+#                no_rows = group[group.columns[0]].count()
+#                group[['khd_info','billings']]=group[['khd_info','billings']].astype('int')
                 s = group.sum()
+                pdb.set_trace()
 #                df.to_excel(writer, sheet_name=sheet_name, index=False, startrow=row+1, header=True)
-                for r in range(no_rows):
-                    for i in range(s.size):
-                        worksheet.write(row+r,i,s.iat[i])
+                for index, value in s.iteritems():
+                        worksheet.write(row,col,value)
+                        col += 1
 #                worksheet.set_row(row,None,None, {'level':0})
                         
-#                worksheet.write(row,0,'kolumna1')
+#                
 #                for xrow in range(row+1, row+1+no_rows+1):
 #                    worksheet.set_row(xrow,None,None,{'level':1})
                 row = row+1
-#                row = row +1
-#                worksheet.set_column('A:C', 10)
+                
+#                worksheet.write(row,0,'kolumna1')
+#                for xrow in range(row+1, row+1+no_rows+1):
+#                    worksheet.set_row(xrow,None,None,{'level':1})
+#                row = row+no_rows+1
+                worksheet.set_column('A:C', 10)
 #            worksheet.set_column('A:C", 10)
