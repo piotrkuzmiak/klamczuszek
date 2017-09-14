@@ -82,5 +82,3 @@ class Excel_report():
                         worksheet.set_row(index, None, None, {'level': x})
                     rowindex = no_rows+1
                     
-#                worksheet.set_column('A:C', 10)
-#            worksheet.set_column('A:C", 10)

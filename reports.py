@@ -1,16 +1,14 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 29 23:29:24 2017
+Created on Fri Sep  8 15:44:16 2017
 
-@author: piotr
+@author: 129175
 """
-from random import choice
-from excel_report import Excel_report
 import pandas as pd
-import sqlite3
 import numpy as np
+from excel_report import Excel_report
 
+<<<<<<< HEAD
 with sqlite3.connect('piotr.db') as connection:
     df = pd.read_sql_query('select obreb, funkcja_dominujaca from nieruchomosci', con=connection)
 
@@ -31,3 +29,9 @@ df_biling['SKP'] = np.random.choice([129175,116110,101900,120120,130130,111111,2
 
 excel = Excel_report(df[['obreb','funkcja_dominujaca','mobile','wired']], groupby=['obreb','funkcja_dominujaca'])
 excel.unload(path='klamczuch.xlsx', sheet_name='Raport')
+=======
+df = pd.DataFrame([[129175,'sprzedaz',True, False],[118158,'sprzedaz', False, False],[129175,'sprzedaz',True,True]], columns=['skp','kampania', 'rejestr', 'biling'])
+df.loc[:,['rejestr', 'biling']] = df[['rejestr', 'biling']].astype(np.int)
+excel = Excel_report(dataframe=df)
+excel.unload('D:/CRM/wymiana/klamczuszek.xlsx','Raport',groupby=['skp', 'kampania'])
+>>>>>>> 50246dd0657a035b74e02799ad6e4b09871aa170
