@@ -29,5 +29,5 @@ df.SKP = df.SKP.apply(lambda x : generuj(lista=[129175,116110,101900,120120,\
 df_biling = pd.DataFrame(np.random.choice([1,2,3,6,7,8,9], size=(50,2)), columns=['numer_a','numer_b'])    
 df_biling['SKP'] = np.random.choice([129175,116110,101900,120120,130130,111111,222222], size=(50,1))
 
-excel = Excel_report(df[['obreb','funkcja_dominujaca','mobile','wired']])
-excel.unload(path='klamczuch.xlsx', sheet_name='Raport', groupby=['obreb','funkcja_dominujaca'])
+excel = Excel_report(df[['obreb','funkcja_dominujaca','mobile','wired']], groupby=['obreb','funkcja_dominujaca'])
+excel.unload(path='klamczuch.xlsx', sheet_name='Raport')
