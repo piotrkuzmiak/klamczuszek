@@ -226,13 +226,13 @@ df_skp_in_mob = df_mapa.merge\
 df_skp_in_phones = df_skp_in_mob.copy()
 df_skp_in_phones.NUMER_B = ''
 df_skp_in_phones.set_value(2,'SKP', 101364)
-df_skp_in_phones.set_value(2,'NUMER_B', '48717959116')
+df_skp_in_phones.set_value(2,'NUMER_B', '')
 df_skp_in_phones.set_value(4,'SKP', 101364)
-df_skp_in_phones.set_value(4,'NUMER_B', '48713284122')
+df_skp_in_phones.set_value(4,'NUMER_B', '')
 df_skp_in_phones.set_value(1,'SKP', 101367)
-df_skp_in_phones.set_value(1,'NUMER_B', '48756418635')
+df_skp_in_phones.set_value(1,'NUMER_B', '')
 df_skp_in_phones.set_value(1,'SKP', 101367)
-df_skp_in_phones.set_value(1,'NUMER_B', '48413761468')
+df_skp_in_phones.set_value(1,'NUMER_B', '')
 #blad logiczny ponizej
 #join musi byc robiony po mobile lub stacjonarny dla tego co wyszlo z khd i linijki powyzej:
 #https://stackoverflow.com/questions/43925603/python-pandas-merge-with-or-logic
