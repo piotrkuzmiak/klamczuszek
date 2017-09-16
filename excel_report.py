@@ -15,7 +15,6 @@ Created on Thu Aug 10 14:45:13 2017
 
 #%%
 import pandas as pd
-import xlsxwriter
 import pdb
 
 class Excel_report():
@@ -26,14 +25,16 @@ class Excel_report():
         
     def __init__(self, dataframe, groupby):
         """
-        Konstruktor do utworzenia obiektu dla wyeksportowania raportu z podliczeniem.
+        Konstruktor do utworzenia obiektu dla wyeksportowania raportu z
+        podliczeniem.
         
         Parameters
         ----------
         dataframe: Dataframe
             zrodlo dla raportu w postaci Dataframe
         groupby: list[str]
-            lista kolumn po ktorej przeprowadzic grupowanie na pandas.Dataframe()
+            lista kolumn po ktorej przeprowadzic grupowanie na 
+            pandas.Dataframe()
             
         Returns
         -------
@@ -50,9 +51,9 @@ class Excel_report():
         
     def unload(self, path, sheet_name='Arkusz1'):
         """
-        Funkcja do weksportowania pandas.Dataframe() do Excel'a.
-        Wyesportowany arkusz zawiera grupowanie.
-        
+        Funkcja do weksportowania pandas.Dataframe() do Excel'a z podsumowaniem
+        w grupach
+                
         Parameters
         ----------
         path: str
@@ -66,46 +67,25 @@ class Excel_report():
                    
         Notes:
         -----
-        Plik w formacie xlsx
         """
         
         with pd.ExcelWriter(path, engine='xlsxwriter') as writer:
             workbook  = writer.book
             format_percentage = workbook.add_format({'num_format': '0%'})
-            rowindex = 0
-            for name_mc, makro in self.dataframe.groupby(by=self.groups[0]):
-                print((name_mc))
-                df_sk_makro = makro[['khd_info','billings']].sum()
-                rowindex=rowindex+df_sk_makro.shape[0]
-                for name_reg, region in makro.groupby(by=self.groups[1]):
-                    print(name_reg)
-                    df_sk_reg = region[['khd_info','billings']].sum()
-                    rowindex=rowindex+df_sk_reg.shape[0]
-                    for name_od, od in region.groupby(by=self.groups[2]):
-                        print(name_od)
-                        df_sk_od = od[['khd_info','billings']].sum()
-                        rowindex=rowindex+df_sk_od.shape[0]
-                        for name_skp, skp in od.groupby(by=self.groups[3]):
-                            print(name_skp)
-                            pdb.set_trace()
-                            df_sk_sum = skp[['khd_info','billings']].sum(numeric_only=True)
-                            rowindex=rowindex+df_sk_sum.shape[0]
-                            df_sk_sum.to_excel(writer, sheet_name=sheet_name, header=False, startrow=rowindex)
-                            worksheet = writer.sheets[sheet_name]
-                            print('podsumowanie dla: ',name_skp,df_sk_sum)
-                        print('podsumowanie dla: ',name_od,df_sk_od)
-                    print('podsumowanie dla: ', name_reg, df_sk_reg)
-                print('podsumowanie dla: ', name_mc,df_sk_makro )
-                df_sk_makro.to_excel(writer, sheet_name=sheet_name, header=False)
-#                worksheet = writer.sheets[sheet_name]
-                
+            df = self._append_tot(self.dataframe.set_index(self.groups)).reset_index(col_fill='index')
+            df.to_excel(writer, sheet_name=sheet_name, index=False)
+            worksheet = writer.sheets[sheet_name]
+            worksheet.autofilter(0,0,df.shape[0],df.shape[1]+1-len(self.groups))
                 
     def unload_pivot(self, path, sheet_name='Arkusz1'):
         with pd.ExcelWriter(path, engine='xlsxwriter') as writer:
             workbook  = writer.book
             format_percentage = workbook.add_format({'num_format': '0%'})
-            pv = self.dataframe.pivot_table(values=['khd_info','billings','% oznaczonych kontaktów'],\
-                                       index=['makroregion', 'region', 'oddzial', 'SKP', 'NAZWA_KAMPANII','offer_type_cd'],\
+            pv = self.dataframe.pivot_table(values=['khd_info','billings',\
+                                                    '% oznaczonych kontaktów'],\
+                                       index=['makroregion', 'region',\
+                                              'oddzial', 'SKP', 'NAZWA_KAMPANII',\
+                                              'offer_type_cd'],\
                                        aggfunc=sum).reset_index()
             pv.to_excel(writer,sheet_name=sheet_name, header=True, index=False)
             worksheet = writer.sheets[sheet_name]
@@ -113,3 +93,45 @@ class Excel_report():
             worksheet.set_column('A:C',35,None)
             worksheet.set_column('E:E',50,None)
             worksheet.autofilter(0,0,pv.shape[0],pv.shape[1])
+            
+    def _append_tot(self,df_new_index):
+        """
+        Funkcja do generowania pandas.Dataframe'a z podsumowaniami w grupach
+        
+        Parameters
+        ----------
+        df_new_index: Dataframe
+            zrodlo dla raportu w postaci pandas.Dataframe() z nadaniem nowego
+            indeksu
+            
+        Returns
+        -------
+        pandas.Dataframe()
+        
+        
+        Example:
+        --------
+        fields = ['makroregion','oddzial','skp','kampania']
+        append_tot(df.set_index(fields)).reset_index()
+                
+        
+        Author:
+        -------
+        piRSquared
+        (Stackoverflow Aug 15 '16 at 23:42)
+        
+        """
+        
+        if hasattr(df_new_index, 'name') and df_new_index.name is not None:
+            xs = df_new_index.xs(df_new_index.name)
+        else:
+            xs = df_new_index
+        gb = xs.groupby(level=0)
+        n = xs.index.nlevels
+        name = tuple('Suma' if i == 0 else '' for i in range(n))
+        tot = gb.sum().sum().rename(name).to_frame().T
+        if n > 1:
+            sm = gb.apply(self._append_tot)
+        else:
+            sm = gb.sum()
+        return pd.concat([sm, tot])
