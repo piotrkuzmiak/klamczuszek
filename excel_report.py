@@ -17,6 +17,7 @@ Created on Thu Aug 10 14:45:13 2017
 import pandas as pd
 import pdb
 
+
 class Excel_report():
     
     """
@@ -25,16 +26,16 @@ class Excel_report():
         
     def __init__(self, dataframe, groupby):
         """
-        Konstruktor do utworzenia obiektu dla wyeksportowania raportu z
+        Konstruktor do utworzenia obiekt dla wyeksportowania raportu z
         podliczeniem.
         
         Parameters
         ----------
         dataframe: Dataframe
             zrodlo dla raportu w postaci Dataframe
-        groupby: list[str]
-            lista kolumn po ktorej przeprowadzic grupowanie na 
-            pandas.Dataframe()
+        groupby: list[tuple(kolumna,szerokosc)])
+            lista z  tuplami po ktorej przeprowadzic grupowanie na 
+            pandas.Dataframe() wraz z wskazana szerokoscia kolumn w Excel'u
             
         Returns
         -------
@@ -45,7 +46,8 @@ class Excel_report():
         """
         self.dataframe = dataframe
         self.no_columns = len(dataframe.columns)
-        self.groups = groupby
+        self.col_width = [width for col, width in groupby]
+        self.groups = [col for col, width in groupby]
         
         
         
@@ -75,6 +77,8 @@ class Excel_report():
             df = self._append_tot(self.dataframe.set_index(self.groups)).reset_index(col_fill='index')
             df.to_excel(writer, sheet_name=sheet_name, index=False)
             worksheet = writer.sheets[sheet_name]
+            for x in range(len(self.col_width)):
+                worksheet.set_column(x,x,self.col_width[x],None)
             worksheet.autofilter(0,0,df.shape[0],df.shape[1]+1-len(self.groups))
                 
     def unload_pivot(self, path, sheet_name='Arkusz1'):
